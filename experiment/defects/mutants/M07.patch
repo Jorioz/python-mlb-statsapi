@@ -1,0 +1,12 @@
+diff --git a/mlbstatsapi/mlb_dataadapter.py b/mlbstatsapi/mlb_dataadapter.py
+--- a/mlbstatsapi/mlb_dataadapter.py
++++ b/mlbstatsapi/mlb_dataadapter.py
+@@ -42,7 +42,7 @@
+             503,
+             504,
+         ),
+-        allowed_methods=frozenset({"GET"}),
++        allowed_methods=frozenset({"get"}),
+         respect_retry_after_header=True,
+         raise_on_status=False,
+     )

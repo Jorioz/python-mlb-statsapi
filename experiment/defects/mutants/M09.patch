@@ -1,0 +1,12 @@
+diff --git a/mlbstatsapi/mlb_dataadapter.py b/mlbstatsapi/mlb_dataadapter.py
+--- a/mlbstatsapi/mlb_dataadapter.py
++++ b/mlbstatsapi/mlb_dataadapter.py
+@@ -59,7 +59,7 @@
+     session.mount(
+         "https://",
+         HTTPAdapter(
+-            max_retries=create_retry_policy(),
++            max_retries=None,
+         ),
+     )
+     session.mount(

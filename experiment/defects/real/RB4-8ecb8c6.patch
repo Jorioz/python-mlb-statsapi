@@ -1,0 +1,10 @@
+diff --git a/mlbstatsapi/_async_transport.py b/mlbstatsapi/_async_transport.py
+index 64a954f..ba460e0 100644
+--- a/mlbstatsapi/_async_transport.py
++++ b/mlbstatsapi/_async_transport.py
+@@ -205,5 +205,4 @@ def create_library_async_client() -> httpx.AsyncClient:
+     return httpx.AsyncClient(
+         headers={"User-Agent": _build_user_agent()},
+         transport=direct,
+-        mounts=mounts,
+     )

@@ -1,0 +1,58 @@
+# CIS*4150 experiment, config C: Staged.
+# Fast offline tests run first; the live MLB API tests run only if they pass.
+# No cache and no parallelism, so the only difference from Baseline is staging.
+name: "CI-C Staged"
+
+on:
+  push:
+    branches: ["ci-experiment", "replay/**", "defect/**", "timing/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    name: "Stage 1: offline tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r experiment/ci/requirements-ci.txt
+          python -m pip install --no-deps -e .
+      - name: Run offline tests
+        run: python -m pytest tests/ --ignore=tests/external_tests -p no:cacheprovider --junitxml=junit-offline.xml
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-staged-offline
+          path: junit-*.xml
+
+  live:
+    name: "Stage 2: live MLB API tests"
+    needs: offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r experiment/ci/requirements-ci.txt
+          python -m pip install --no-deps -e .
+      - name: Run live MLB API tests
+        run: python -m pytest tests/external_tests/ -p no:cacheprovider --junitxml=junit-live.xml
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-staged-live
+          path: junit-*.xml

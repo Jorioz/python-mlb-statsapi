@@ -1,0 +1,4 @@
+module,total,killed,survived,other,mutation_score_pct
+mlbstatsapi/_http.py,68,38,30,0,55.9
+mlbstatsapi/mlb_dataadapter.py,239,185,54,0,77.4
+ALL,307,223,84,0,72.6

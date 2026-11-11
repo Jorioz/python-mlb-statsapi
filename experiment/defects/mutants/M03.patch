@@ -1,0 +1,12 @@
+diff --git a/mlbstatsapi/_http.py b/mlbstatsapi/_http.py
+--- a/mlbstatsapi/_http.py
++++ b/mlbstatsapi/_http.py
+@@ -24,7 +24,7 @@
+ 
+ def _compatibility_warning_stacklevel() -> int:
+     """Return a warnings.warn stacklevel for the first non-package caller."""
+-    frame = inspect.currentframe()
++    frame = None
+     stacklevel = 1
+ 
+     try:

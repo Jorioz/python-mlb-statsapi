@@ -158,3 +158,8 @@ utils/*.json
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# CIS*4150 experiment artifacts
+.testmondata*
+/mutants/
+/mutmut_run.log

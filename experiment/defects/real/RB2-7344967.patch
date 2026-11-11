@@ -1,0 +1,140 @@
+diff --git a/mlbstatsapi/models/base.py b/mlbstatsapi/models/base.py
+index 188063f..c438f9b 100644
+--- a/mlbstatsapi/models/base.py
++++ b/mlbstatsapi/models/base.py
+@@ -20,8 +20,4 @@ class MLBBaseModel(BaseModel):
+         extra="ignore",
+         alias_generator=to_camel_case,
+         populate_by_name=True,
+-        # MLB's API occasionally returns numbers for fields that are logically strings
+-        # (e.g. liveData.plays.*.playEvents.*.base can be 1/2/3).
+-        # Enable coercion to be resilient to these inconsistencies.
+-        coerce_numbers_to_str=True,
+     )
+diff --git a/mlbstatsapi/models/game/livedata/linescore/attributes.py b/mlbstatsapi/models/game/livedata/linescore/attributes.py
+index 5aafe2a..68fbe7d 100644
+--- a/mlbstatsapi/models/game/livedata/linescore/attributes.py
++++ b/mlbstatsapi/models/game/livedata/linescore/attributes.py
+@@ -112,12 +112,11 @@ class LinescoreOffense(MLBBaseModel):
+     in_hole: Optional[Person] = Field(default=None, alias="inHole")
+     pitcher: Optional[Person] = None
+     batting_order: Optional[int] = Field(default=None, alias="battingOrder")
+-    # MLB API sometimes returns these as person objects (id/link/fullName).
+-    first: Optional[Person] = None
+-    second: Optional[Person] = None
+-    third: Optional[Person] = None
++    first: Optional[str] = None
++    second: Optional[str] = None
++    third: Optional[str] = None
+ 
+-    @field_validator('batter', 'on_deck', 'in_hole', 'pitcher', 'first', 'second', 'third', mode='before')
++    @field_validator('batter', 'on_deck', 'in_hole', 'pitcher', mode='before')
+     @classmethod
+     def empty_dict_to_none(cls, v: Any) -> Any:
+         """Convert empty dicts to None."""
+diff --git a/mlbstatsapi/models/game/livedata/plays/play/attributes.py b/mlbstatsapi/models/game/livedata/plays/play/attributes.py
+index 63fc195..fda0cf2 100644
+--- a/mlbstatsapi/models/game/livedata/plays/play/attributes.py
++++ b/mlbstatsapi/models/game/livedata/plays/play/attributes.py
+@@ -1,4 +1,4 @@
+-from typing import Optional, Any, Dict, List, Union
++from typing import Optional
+ from pydantic import Field
+ from mlbstatsapi.models.base import MLBBaseModel
+ 
+@@ -99,5 +99,4 @@ class PlayReviewDetails(MLBBaseModel):
+     in_progress: bool = Field(alias="inProgress")
+     review_type: str = Field(alias="reviewType")
+     challenge_team_id: Optional[int] = Field(default=None, alias="challengeTeamId")
+-    # MLB API returns this as either null, a string, or a list of review objects.
+-    additional_reviews: Optional[Union[str, List[Dict[str, Any]]]] = Field(default=None, alias="additionalReviews")
++    additional_reviews: Optional[str] = Field(default=None, alias="additionalReviews")
+diff --git a/mlbstatsapi/models/game/livedata/plays/play/playevent/playevent.py b/mlbstatsapi/models/game/livedata/plays/play/playevent/playevent.py
+index 7a18521..10b44ab 100644
+--- a/mlbstatsapi/models/game/livedata/plays/play/playevent/playevent.py
++++ b/mlbstatsapi/models/game/livedata/plays/play/playevent/playevent.py
+@@ -1,5 +1,5 @@
+-from typing import Optional, Union, Any
+-from pydantic import Field, field_validator
++from typing import Optional
++from pydantic import Field
+ from mlbstatsapi.models.base import MLBBaseModel
+ from mlbstatsapi.models.people import Person, Position
+ from mlbstatsapi.models.data import Count, HitData, PitchData, PlayDetails
+@@ -55,8 +55,7 @@ class PlayEvent(MLBBaseModel):
+     pfx_id: Optional[str] = Field(default=None, alias="pfxId")
+     start_time: Optional[str] = Field(default=None, alias="startTime")
+     end_time: Optional[str] = Field(default=None, alias="endTime")
+-    # MLB API sometimes returns a person object (id/link) instead of a string.
+-    umpire: Optional[Union[str, Person]] = None
++    umpire: Optional[str] = None
+     base: Optional[str] = None
+     play_id: Optional[str] = Field(default=None, alias="playId")
+     pitch_number: Optional[int] = Field(default=None, alias="pitchNumber")
+@@ -72,10 +71,3 @@ class PlayEvent(MLBBaseModel):
+     replaced_player: Optional[Person] = Field(default=None, alias="replacedPlayer")
+     review_details: Optional[dict] = Field(default=None, alias="reviewDetails")
+     injury_type: Optional[str] = Field(default=None, alias="injuryType")
+-
+-    @field_validator("umpire", mode="before")
+-    @classmethod
+-    def _empty_dict_to_none(cls, v: Any) -> Any:
+-        if isinstance(v, dict) and not v:
+-            return None
+-        return v
+diff --git a/mlbstatsapi/models/game/livedata/plays/play/playrunner/attributes.py b/mlbstatsapi/models/game/livedata/plays/play/playrunner/attributes.py
+index a31396a..788afbc 100644
+--- a/mlbstatsapi/models/game/livedata/plays/play/playrunner/attributes.py
++++ b/mlbstatsapi/models/game/livedata/plays/play/playrunner/attributes.py
+@@ -1,5 +1,5 @@
+ from typing import Optional
+-from pydantic import Field, field_validator
++from pydantic import Field
+ from mlbstatsapi.models.base import MLBBaseModel
+ from mlbstatsapi.models.people import Person, Position
+ 
+@@ -41,21 +41,13 @@ class RunnerMovement(MLBBaseModel):
+     out_base : str
+         Base runner was made out.
+     """
+-    is_out: bool = Field(default=False, alias="isOut")
++    is_out: bool = Field(alias="isOut")
+     out_number: Optional[int] = Field(default=None, alias="outNumber")
+     origin_base: Optional[str] = Field(default=None, alias="originBase")
+     start: Optional[str] = None
+     end: Optional[str] = None
+     out_base: Optional[str] = Field(default=None, alias="outBase")
+ 
+-    @field_validator("is_out", mode="before")
+-    @classmethod
+-    def _coerce_is_out(cls, v):
+-        # MLB API occasionally returns null for isOut.
+-        if v is None:
+-            return False
+-        return v
+-
+ 
+ class RunnerDetails(MLBBaseModel):
+     """
+diff --git a/mlbstatsapi/models/game/livedata/plays/playbyinning/attributes.py b/mlbstatsapi/models/game/livedata/plays/playbyinning/attributes.py
+index 8bfe9d5..56136f2 100644
+--- a/mlbstatsapi/models/game/livedata/plays/playbyinning/attributes.py
++++ b/mlbstatsapi/models/game/livedata/plays/playbyinning/attributes.py
+@@ -1,4 +1,4 @@
+-from typing import List, Optional
++from typing import List
+ from pydantic import Field
+ from mlbstatsapi.models.base import MLBBaseModel
+ from mlbstatsapi.models.teams import Team
+@@ -16,9 +16,8 @@ class HitCoordinates(MLBBaseModel):
+     y : float
+         Y coordinate for hit.
+     """
+-    # MLB API occasionally returns null for these coordinates.
+-    x: Optional[float] = None
+-    y: Optional[float] = None
++    x: float
++    y: float
+ 
+ 
+ class HitsByTeam(MLBBaseModel):

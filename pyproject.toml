@@ -38,3 +38,14 @@ twine = "^6.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+# CIS*4150 experiment: mutation testing scope (run under Linux/WSL; mutmut 3 does not support native Windows)
+[tool.mutmut]
+source_paths = ["mlbstatsapi/mlb_dataadapter.py", "mlbstatsapi/_http.py"]
+also_copy = ["mlbstatsapi/", ".github/", "scripts/", "docs/", "mkdocs.yml", "pyproject.toml", "README.md"]
+pytest_add_cli_args_test_selection = ["tests/"]
+# The 3 "warning points to caller line" tests inspect stack frames, which the
+# mutmut trampoline changes. The 2 roster-parser tests mutate a module-level
+# payload, so they fail when mutmut reruns the suite in one process. All 5 are
+# excluded only for mutation runs.
+pytest_add_cli_args = ["--ignore=tests/external_tests", "-p", "no:cacheprovider", "-k", "not compatibility_warning_points_to and not test_parse_roster_"]

@@ -1,0 +1,35 @@
+diff --git a/mlbstatsapi/_helpers/schedule.py b/mlbstatsapi/_helpers/schedule.py
+index 0d6b4a5..677f965 100644
+--- a/mlbstatsapi/_helpers/schedule.py
++++ b/mlbstatsapi/_helpers/schedule.py
+@@ -11,7 +11,7 @@ def build_schedule_params(
+         params["endDate"] = end_date
+     elif date and not (start_date or end_date):
+         params["date"] = date
+-    elif "gamePks" not in params:
++    else:
+         return None
+ 
+     if team_id:
+diff --git a/mlbstatsapi/mlb_api.py b/mlbstatsapi/mlb_api.py
+index 9ca1d42..056f863 100644
+--- a/mlbstatsapi/mlb_api.py
++++ b/mlbstatsapi/mlb_api.py
+@@ -789,7 +789,7 @@ class Mlb:
+             params["endDate"] = end_date
+         elif date and not (start_date or end_date):
+             params["date"] = date
+-        elif "gamePks" not in params:
++        else:
+             return None
+ 
+ 
+@@ -865,7 +865,7 @@ class Mlb:
+             params["endDate"] = end_date
+         elif date and not (start_date or end_date):
+             params["date"] = date
+-        elif "gamePks" not in params:
++        else:
+             return None
+ 
+         params["sportId"] = sport_id

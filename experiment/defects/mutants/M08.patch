@@ -1,0 +1,12 @@
+diff --git a/mlbstatsapi/mlb_dataadapter.py b/mlbstatsapi/mlb_dataadapter.py
+--- a/mlbstatsapi/mlb_dataadapter.py
++++ b/mlbstatsapi/mlb_dataadapter.py
+@@ -246,7 +246,7 @@
+                 method="GET",
+             )
+ 
+-        if not 200 <= status_code <= 299:
++        if not 200 <= status_code < 299:
+             raise _build_http_error(
+                 response,
+                 status_code=response.status_code,

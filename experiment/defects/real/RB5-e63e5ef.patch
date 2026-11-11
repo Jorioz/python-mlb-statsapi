@@ -1,0 +1,13 @@
+diff --git a/mlbstatsapi/mlb_dataadapter.py b/mlbstatsapi/mlb_dataadapter.py
+index ae10ba6..9e6efc2 100644
+--- a/mlbstatsapi/mlb_dataadapter.py
++++ b/mlbstatsapi/mlb_dataadapter.py
+@@ -122,7 +122,7 @@ class MlbResult:
+         self.message = str(message)
+ 
+         # Copy so caller-owned dictionaries are not mutated when copyright is removed.
+-        self.data = dict(data) if data is not None else {}
++        self.data = data if data is not None else {}
+         self.data.pop("copyright", None)
+ 
+ 

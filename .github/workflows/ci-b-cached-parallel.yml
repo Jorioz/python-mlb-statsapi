@@ -1,0 +1,37 @@
+# CIS*4150 experiment, config B: Cached + parallel.
+# Same tests as Baseline, but pip downloads are cached between runs and tests
+# are split across all runner cores with pytest-xdist.
+name: "CI-B Cached + Parallel"
+
+on:
+  push:
+    branches: ["ci-experiment", "replay/**", "defect/**", "timing/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: All tests (pip cache + xdist)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: experiment/ci/requirements-ci.txt
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r experiment/ci/requirements-ci.txt
+          python -m pip install --no-deps -e .
+      - name: Run all tests in parallel
+        run: python -m pytest tests/ -n auto -p no:cacheprovider --junitxml=junit-all.xml
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-cached-parallel
+          path: junit-*.xml

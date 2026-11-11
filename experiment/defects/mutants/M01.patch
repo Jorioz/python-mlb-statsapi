@@ -1,0 +1,11 @@
+diff --git a/mlbstatsapi/_http.py b/mlbstatsapi/_http.py
+--- a/mlbstatsapi/_http.py
++++ b/mlbstatsapi/_http.py
+@@ -118,7 +118,6 @@
+         body_excerpt = None
+ 
+     return MlbHttpError(
+-        status_code=status_code,
+         reason=reason,
+         url=url,
+         method=method,

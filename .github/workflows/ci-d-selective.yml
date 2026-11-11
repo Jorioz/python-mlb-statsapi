@@ -1,0 +1,51 @@
+# CIS*4150 experiment, config D: Selective.
+# pytest-testmon runs only the tests whose covered code changed since the last
+# recorded run. Its database (.testmondata) is carried between runs with
+# actions/cache. Other branches fall back to the default branch's cache, so
+# make ci-experiment the fork's default branch and run this workflow there once
+# on clean v1.1.1 to seed it. With no database, testmon runs every test.
+name: "CI-D Selective"
+
+on:
+  push:
+    branches: ["ci-experiment", "replay/**", "defect/**", "timing/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Affected tests (pytest-testmon)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r experiment/ci/requirements-ci.txt
+          python -m pip install --no-deps -e .
+      - name: Restore testmon database
+        uses: actions/cache@v4
+        with:
+          path: .testmondata
+          key: testmon-${{ runner.os }}-py312-${{ github.run_id }}
+          restore-keys: testmon-${{ runner.os }}-py312-
+      - name: Run affected tests
+        shell: bash
+        run: |
+          set +e
+          python -m pytest tests/ --testmon -p no:cacheprovider --junitxml=junit-selected.xml
+          rc=$?
+          # 5 = no tests selected: nothing this change touches, so pass.
+          if [ "$rc" -eq 5 ]; then echo "testmon selected no tests"; exit 0; fi
+          exit "$rc"
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-selective
+          path: junit-*.xml

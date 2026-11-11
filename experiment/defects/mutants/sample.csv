@@ -1,0 +1,11 @@
+defect_id,mutmut_name,module,seed
+M01,mlbstatsapi._http.x__build_http_error__mutmut_13,mlbstatsapi/_http.py,4150
+M02,mlbstatsapi.mlb_dataadapter.xǁMlbResultǁ__init____mutmut_10,mlbstatsapi/mlb_dataadapter.py,4150
+M03,mlbstatsapi._http.x__compatibility_warning_stacklevel__mutmut_1,mlbstatsapi/_http.py,4150
+M04,mlbstatsapi.mlb_dataadapter.xǁMlbDataAdapterǁget__mutmut_109,mlbstatsapi/mlb_dataadapter.py,4150
+M05,mlbstatsapi.mlb_dataadapter.xǁMlbDataAdapterǁget__mutmut_67,mlbstatsapi/mlb_dataadapter.py,4150
+M06,mlbstatsapi.mlb_dataadapter.xǁMlbDataAdapterǁget__mutmut_110,mlbstatsapi/mlb_dataadapter.py,4150
+M07,mlbstatsapi.mlb_dataadapter.x_create_retry_policy__mutmut_31,mlbstatsapi/mlb_dataadapter.py,4150
+M08,mlbstatsapi.mlb_dataadapter.xǁMlbDataAdapterǁget__mutmut_107,mlbstatsapi/mlb_dataadapter.py,4150
+M09,mlbstatsapi.mlb_dataadapter.x__configure_retry_adapters__mutmut_7,mlbstatsapi/mlb_dataadapter.py,4150
+M10,mlbstatsapi.mlb_dataadapter.x__configure_retry_adapters__mutmut_6,mlbstatsapi/mlb_dataadapter.py,4150
